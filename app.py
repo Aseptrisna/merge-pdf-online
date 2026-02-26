@@ -241,6 +241,31 @@ def download(result_id):
     )
 
 
+# ── Error Handlers ───────────────────────────────
+
+@app.errorhandler(404)
+def not_found(e):
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        return jsonify({"error": "Halaman tidak ditemukan."}), 404
+    return render_template("error.html", code=404,
+                           title="Halaman Tidak Ditemukan",
+                           message="Maaf, halaman yang kamu cari tidak ada atau sudah dihapus."), 404
+
+
+@app.errorhandler(500)
+def server_error(e):
+    if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
+        return jsonify({"error": "Terjadi kesalahan server."}), 500
+    return render_template("error.html", code=500,
+                           title="Kesalahan Server",
+                           message="Terjadi kesalahan di server. Silakan coba beberapa saat lagi."), 500
+
+
+@app.errorhandler(413)
+def too_large(e):
+    return jsonify({"error": f"File terlalu besar. Maksimum {MAX_MB} MB per file."}), 413
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
