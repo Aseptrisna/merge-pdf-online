@@ -183,12 +183,14 @@
       <i class="fa-solid fa-file-arrow-up drop-icon"></i>
       <p>Seret &amp; lepas file ke sini</p>
       <span>atau</span>
-      <label class="btn btn-outline" for="file-input">
+      <button type="button" class="btn btn-outline" id="btn-pick-file">
         <i class="fa-solid fa-folder-open"></i> Pilih File
-      </label>
-      <input type="file" id="file-input" multiple
-             accept=".pdf,.jpg,.jpeg,.png,.bmp,.gif,.tiff,.tif,.webp" hidden />
+      </button>
     </div>
+    <!-- Input file di luar dropzone, tidak ada label yg terhubung -->
+    <input type="file" id="file-input" multiple
+           accept=".pdf,.jpg,.jpeg,.png,.bmp,.gif,.tiff,.tif,.webp"
+           style="display:none" />
 
     <div id="upload-progress" class="upload-progress hidden">
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -205,11 +207,12 @@
     <ul class="file-list" id="file-list"></ul>
 
     <div class="add-more-row">
-      <label class="btn btn-outline btn-sm" for="file-input-more">
+      <button type="button" class="btn btn-outline btn-sm" id="btn-pick-more">
         <i class="fa-solid fa-plus"></i> Tambah File Lagi
-      </label>
+      </button>
       <input type="file" id="file-input-more" multiple
-             accept=".pdf,.jpg,.jpeg,.png,.bmp,.gif,.tiff,.tif,.webp" hidden />
+             accept=".pdf,.jpg,.jpeg,.png,.bmp,.gif,.tiff,.tif,.webp"
+             style="display:none" />
     </div>
   </section>
 
