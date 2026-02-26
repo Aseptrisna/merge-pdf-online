@@ -72,38 +72,36 @@ dropzone.addEventListener('drop', e => {
 });
 
 // Klik dropzone → buka file picker
-// PENTING: stopPropagation di label agar tidak bubble ke sini
+// Guard: jika yang diklik adalah label atau tombol di dalam dropzone, skip
+// agar tidak double-trigger bersama `for` attribute milik label
 dropzone.addEventListener('click', e => {
-  // Jangan trigger jika yang diklik adalah label atau button di dalam dropzone
   if (e.target.closest('label') || e.target.closest('button')) return;
   fileInput.click();
 });
 
-// Label "Pilih File" di dalam dropzone sudah punya for="file-input",
-// tapi kita tetap stop propagation agar klik label tidak naik ke dropzone
+// Stopkan propagasi dari label ke dropzone (cegah dialog muncul 2x)
 document.querySelectorAll('label[for="file-input"]').forEach(lbl => {
   lbl.addEventListener('click', e => e.stopPropagation());
 });
 
-// Reset value dulu agar file yang sama bisa dipilih ulang
-fileInput.addEventListener('click', () => { fileInput.value = ''; });
-fileInputMore.addEventListener('click', () => { fileInputMore.value = ''; });
-
+// Change handler: convert ke Array DULU, baru reset value, baru upload
 fileInput.addEventListener('change', e => {
-  if (e.target.files.length > 0) uploadFiles(e.target.files);
+  const files = Array.from(e.target.files);   // ambil referensi File objects
+  fileInput.value = '';                        // reset agar file sama bisa dipilih lagi
+  if (files.length > 0) uploadFiles(files);
 });
+
 fileInputMore.addEventListener('change', e => {
-  if (e.target.files.length > 0) uploadFiles(e.target.files);
+  const files = Array.from(e.target.files);
+  fileInputMore.value = '';
+  if (files.length > 0) uploadFiles(files);
 });
 
 // ── Upload ───────────────────────────────────────
-async function uploadFiles(files) {
-  if (!files || files.length === 0) return;
-  if (isUploading) return;   // cegah double upload
+async function uploadFiles(fileArr) {
+  if (!fileArr || fileArr.length === 0) return;
+  if (isUploading) return;
   isUploading = true;
-
-  // Ambil FileList menjadi array sebelum input di-reset
-  const fileArr = Array.from(files);
 
   const formData = new FormData();
   fileArr.forEach(f => formData.append('files', f));
@@ -113,7 +111,6 @@ async function uploadFiles(files) {
   uploadProgress.classList.remove('hidden');
   animateProgress(0, 60, 400);
   progressText.textContent = `Mengupload ${fileArr.length} file…`;
-  dropzone.classList.add('uploading');
 
   try {
     const res  = await fetch(`${API}/upload`, { method: 'POST', body: formData });
@@ -131,8 +128,7 @@ async function uploadFiles(files) {
 
     setTimeout(() => {
       resetProgress();
-      data.files.forEach(f => fileItems.push(f));
-      renderFileList();
+      data.files.forEach(f => fileItems.push(f));      renderFileList();
       showSteps();
     }, 700);
 
