@@ -72,6 +72,11 @@ def image_to_pdf_pages(image_path: Path, writer: PdfWriter):
 
 # ── Routes ──────────────────────────────────────────────
 
+@app.route("/google28fd1950508192a3.html")
+def google_verify():
+    return render_template("google28fd1950508192a3.html")
+
+
 @app.route("/")
 def index():
     cleanup_old_files()
